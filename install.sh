@@ -4,6 +4,8 @@
 # 检查系统
 export LANG=en_US.UTF-8
 
+install_script_file="$0"
+
 echoContent() {
 	case $1 in
 	# 红色
@@ -3253,8 +3255,9 @@ EOF
 # 脚本快捷方式
 aliasInstall() {
 
-	if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者：mack-a"; then
-		mv "$HOME/install.sh" /etc/v2ray-agent/install.sh
+    script_file="$install_script_file"
+	if [[ -f "$script_file" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$script_file" -q "作者：mack-a"; then
+		mv "$script_file" /etc/v2ray-agent/install.sh
 		local vasmaType=
 		if [[ -d "/usr/bin/" ]]; then
 			if [[ ! -f "/usr/bin/vasma" ]]; then
@@ -3263,14 +3266,14 @@ aliasInstall() {
 				vasmaType=true
 			fi
 
-			rm -rf "$HOME/install.sh"
+			rm -rf "$script_file"
 		elif [[ -d "/usr/sbin" ]]; then
 			if [[ ! -f "/usr/sbin/vasma" ]]; then
 				ln -s /etc/v2ray-agent/install.sh /usr/sbin/vasma
 				chmod 700 /usr/sbin/vasma
 				vasmaType=true
 			fi
-			rm -rf "$HOME/install.sh"
+			rm -rf "$script_file"
 		fi
 		if [[ "${vasmaType}" == "true" ]]; then
 			echoContent green "快捷方式创建成功，可执行[vasma]重新打开脚本"
@@ -3280,7 +3283,8 @@ aliasInstall() {
 
 # 检查ipv6、ipv4
 checkIPv6() {
-	pingIPv6=$(ping6 -c 1 www.google.com | sed '2{s/[^(]*(//;s/).*//;q;}' | tail -n +2)
+	# pingIPv6=$(ping6 -c 1 www.google.com | sed '2{s/[^(]*(//;s/).*//;q;}' | tail -n +2)
+    pingIPv6=$(ping6 -c 1 www.google.com | sed -n '1p' |sed 's/.*(//g;s/).*//g')
 	if [[ -z "${pingIPv6}" ]]; then
 		echoContent red " ---> 不支持ipv6"
 		exit 0
